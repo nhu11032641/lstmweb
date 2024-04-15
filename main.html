@@ -59,6 +59,11 @@
             </table>
         </div>
         <div id="t2">
+            <div class="input-group input-group-lg" style="margin-top: 10px;">
+                <span class="input-group-text" id="inputGroup-sizing-lg">輸入預測天數</span>
+                <input type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-lg" id="day">
+            </div>
             <h2 id="th1" style="margin-top: 10px;">Train Data</h2>
             <table class="table table-bordered" style="margin-top: 10px;">
                 <thead>
@@ -153,7 +158,31 @@
         <div id="t4">
             <img id="frame">
             <h2 id="loss"></h2>
-            <img id="frame2">
+            <img id="frame2"><br>
+            <img id="frame3"><br>
+            <img id="frame4"><br>
+            <div id="t5">
+                <table class="table table-bordered" style="margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th>co2</th>
+                            <th>co2_avg</th>
+                            <th>co2_std</th>
+                            <th>co2_thr</th>
+                            <th>co2_sta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="co2one"></td>
+                            <td id="co2two"></td>
+                            <td id="co2three"></td>
+                            <td id="co2four"></td>
+                            <td id="co2five"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script>
@@ -165,7 +194,7 @@
             $("#btn2").hide()
             $("#btn3").hide()
             $("#btn4").hide()
-            var urlval = "https://c5d0-125-227-98-99.ngrok-free.app"
+            var urlval = "https://2d54-118-163-254-21.ngrok-free.app"
             var alldata = {};
             $.ajax({
                 url: urlval + "/getproduct",
@@ -183,6 +212,7 @@
                 }
             });
             $("#btn").on("click", function () {
+                $("#day").val("")
                 $("#t2").hide()
                 $("#t3").hide()
                 $("#t4").hide()
@@ -273,6 +303,7 @@
                 $(this).prop("disabled", true);
                 $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...')
                 console.log(alldata)
+                alldata['day'] = 0
                 $.ajax({
                     type: 'POST',
                     url: urlval + "/postdata2",
@@ -345,8 +376,8 @@
                         $('#t2').show()
                         $('#btn3').show()
                         $('#btn2').hide()
-                        $('#th1').append("(共" + response.traindata['長度'] + "筆)")
-                        $('#th2').append("(共" + response.testdata['長度'] + "筆)")
+                        $('#th1').html("Train Data(共" + response.traindata['長度'] + "筆)")
+                        $('#th2').html("Test Data(共" + response.testdata['長度'] + "筆)")
                         $('#btn2').prop("disabled", false);
                         $('#btn2').html('資料處理');
                     },
@@ -370,122 +401,164 @@
                 $("#splittestfour").html("")
                 $("#splittestfive").html("")
                 $("#splittestsix").html("")
-                $(this).prop("disabled", true);
-                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...')
-                $.ajax({
-                    type: 'POST',
-                    url: urlval + "/datadealwith",
-                    data: JSON.stringify(alldata),
-                    headers: {
-                        "ngrok-skip-browser-warning": "69420"
-                    },
-                    success: function (response) {
-                        console.log(response);
-                        console.log(response.traindata['長度'])
-                        console.log(response.testdata['長度'])
-                        console.log(response.testdata['volumee after 14 days'][0])
-                        if (response.traindata['長度'] < 15) {
-                            for (var i = 0; i < response.traindata['長度']; i++) {
-                                $("#splittrainone").append(response.traindata['highest price'][i] + '<br>')
-                                $("#splittraintwo").append(response.traindata['median price'][i] + '<br>')
-                                $("#splittrainthree").append(response.traindata['lowest price'][i] + '<br>')
-                                $("#splittrainfour").append(response.traindata['average price'][i] + '<br>')
-                                $("#splittrainfive").append(response.traindata['volume'][i] + '<br>')
-                                $("#splittrainsix").append(response.traindata['volume after 14 days'][i] + '<br>')
-                            }
-                        } else {
-                            var getlen = response.traindata['長度']
-                            var arr = [0, 1, 2, 3, 4, 5, getlen - 5, getlen - 4, getlen - 3, getlen - 2, getlen - 1]
-                            var item = 0
-                            arr.forEach(e => {
-                                item += 1
-                                if (item == 6) {
-                                    $("#splittrainone").append('...<br>')
-                                    $("#splittraintwo").append('...<br>')
-                                    $("#splittrainthree").append('...<br>')
-                                    $("#splittrainfour").append('...<br>')
-                                    $("#splittrainfive").append('...<br>')
-                                    $("#splittrainsix").append('...<br>')
-                                } else {
-                                    $("#splittrainone").append(response.traindata['highest price'][e] + '<br>')
-                                    $("#splittraintwo").append(response.traindata['median price'][e] + '<br>')
-                                    $("#splittrainthree").append(response.traindata['lowest price'][e] + '<br>')
-                                    $("#splittrainfour").append(response.traindata['average price'][e] + '<br>')
-                                    $("#splittrainfive").append(response.traindata['volume'][e] + '<br>')
-                                    $("#splittrainsix").append(response.traindata['volume after 14 days'][e] + '<br>')
+                if ($("#day").val() > 0) {
+                    $(this).prop("disabled", true);
+                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...')
+                    alldata['day'] = $("#day").val()
+                    $.ajax({
+                        type: 'POST',
+                        url: urlval + "/datadealwith",
+                        data: JSON.stringify(alldata),
+                        headers: {
+                            "ngrok-skip-browser-warning": "69420"
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            console.log(response.traindata['長度'])
+                            console.log(response.testdata['長度'])
+                            console.log(response.testdata['volumee after'][0])
+                            if (response.traindata['長度'] < 15) {
+                                for (var i = 0; i < response.traindata['長度']; i++) {
+                                    $("#splittrainone").append(response.traindata['highest price'][i] + '<br>')
+                                    $("#splittraintwo").append(response.traindata['median price'][i] + '<br>')
+                                    $("#splittrainthree").append(response.traindata['lowest price'][i] + '<br>')
+                                    $("#splittrainfour").append(response.traindata['average price'][i] + '<br>')
+                                    $("#splittrainfive").append(response.traindata['volume'][i] + '<br>')
+                                    $("#splittrainsix").append(response.traindata['volume after'][i] + '<br>')
                                 }
-                            });
-                        }
-                        if (response.testdata['長度'] < 15) {
-                            for (var i = 0; i < response.testdata['長度']; i++) {
-                                $("#splittestone").append(response.testdata['highest price'][i] + '<br>')
-                                $("#splittesttwo").append(response.testdata['median price'][i] + '<br>')
-                                $("#splittestthree").append(response.testdata['lowest price'][i] + '<br>')
-                                $("#splittestfour").append(response.testdata['average price'][i] + '<br>')
-                                $("#splittestfive").append(response.testdata['volume'][i] + '<br>')
-                                $("#splittestsix").append(response.testdata['volumee after 14 days'][i] + '<br>')
+                            } else {
+                                var getlen = response.traindata['長度']
+                                var arr = [0, 1, 2, 3, 4, 5, getlen - 5, getlen - 4, getlen - 3, getlen - 2, getlen - 1]
+                                var item = 0
+                                arr.forEach(e => {
+                                    item += 1
+                                    if (item == 6) {
+                                        $("#splittrainone").append('...<br>')
+                                        $("#splittraintwo").append('...<br>')
+                                        $("#splittrainthree").append('...<br>')
+                                        $("#splittrainfour").append('...<br>')
+                                        $("#splittrainfive").append('...<br>')
+                                        $("#splittrainsix").append('...<br>')
+                                    } else {
+                                        $("#splittrainone").append(response.traindata['highest price'][e] + '<br>')
+                                        $("#splittraintwo").append(response.traindata['median price'][e] + '<br>')
+                                        $("#splittrainthree").append(response.traindata['lowest price'][e] + '<br>')
+                                        $("#splittrainfour").append(response.traindata['average price'][e] + '<br>')
+                                        $("#splittrainfive").append(response.traindata['volume'][e] + '<br>')
+                                        $("#splittrainsix").append(response.traindata['volume after'][e] + '<br>')
+                                    }
+                                });
                             }
-                        } else {
-                            var getlen = response.testdata['長度']
-                            var arr = [0, 1, 2, 3, 4, 5, getlen - 5, getlen - 4, getlen - 3, getlen - 2, getlen - 1]
-                            var item = 0
-                            arr.forEach(e => {
-                                item += 1
-                                if (item == 6) {
-                                    $("#splittestone").append('...<br>')
-                                    $("#splittesttwo").append('...<br>')
-                                    $("#splittestthree").append('...<br>')
-                                    $("#splittestfour").append('...<br>')
-                                    $("#splittestfive").append('...<br>')
-                                    $("#splittestsix").append('...<br>')
-                                } else {
-                                    $("#splittestone").append(response.testdata['highest price'][e] + '<br>')
-                                    $("#splittesttwo").append(response.testdata['median price'][e] + '<br>')
-                                    $("#splittestthree").append(response.testdata['lowest price'][e] + '<br>')
-                                    $("#splittestfour").append(response.testdata['average price'][e] + '<br>')
-                                    $("#splittestfive").append(response.testdata['volume'][e] + '<br>')
-                                    $("#splittestsix").append(response.testdata['volumee after 14 days'][e] + '<br>')
+                            if (response.testdata['長度'] < 15) {
+                                for (var i = 0; i < response.testdata['長度']; i++) {
+                                    $("#splittestone").append(response.testdata['highest price'][i] + '<br>')
+                                    $("#splittesttwo").append(response.testdata['median price'][i] + '<br>')
+                                    $("#splittestthree").append(response.testdata['lowest price'][i] + '<br>')
+                                    $("#splittestfour").append(response.testdata['average price'][i] + '<br>')
+                                    $("#splittestfive").append(response.testdata['volume'][i] + '<br>')
+                                    $("#splittestsix").append(response.testdata['volumee after'][i] + '<br>')
                                 }
-                            });
-                        }
-                        $('#t3').show()
-                        $('#btn4').show()
-                        $('#btn3').hide()
-                        $('#th21').append("(共" + response.traindata['長度'] + "筆)")
-                        $('#th22').append("(共" + response.testdata['長度'] + "筆)")
-                        $('#btn3').prop("disabled", false);
-                        $('#btn3').html('資料切割');
-                    },
-                    dataType: 'json',
-                    contentType: "application/json;charset=utf-8",
-                });
+                            } else {
+                                var getlen = response.testdata['長度']
+                                var arr = [0, 1, 2, 3, 4, 5, getlen - 5, getlen - 4, getlen - 3, getlen - 2, getlen - 1]
+                                var item = 0
+                                arr.forEach(e => {
+                                    item += 1
+                                    if (item == 6) {
+                                        $("#splittestone").append('...<br>')
+                                        $("#splittesttwo").append('...<br>')
+                                        $("#splittestthree").append('...<br>')
+                                        $("#splittestfour").append('...<br>')
+                                        $("#splittestfive").append('...<br>')
+                                        $("#splittestsix").append('...<br>')
+                                    } else {
+                                        $("#splittestone").append(response.testdata['highest price'][e] + '<br>')
+                                        $("#splittesttwo").append(response.testdata['median price'][e] + '<br>')
+                                        $("#splittestthree").append(response.testdata['lowest price'][e] + '<br>')
+                                        $("#splittestfour").append(response.testdata['average price'][e] + '<br>')
+                                        $("#splittestfive").append(response.testdata['volume'][e] + '<br>')
+                                        $("#splittestsix").append(response.testdata['volumee after'][e] + '<br>')
+                                    }
+                                });
+                            }
+                            $('#t3').show()
+                            $('#btn4').show()
+                            $('#btn3').hide()
+                            $('#th21').html("Train Data(共" + response.traindata['長度'] + "筆)")
+                            $('#th22').html("Test Data(共" + response.testdata['長度'] + "筆)")
+                            $('#btn3').prop("disabled", false);
+                            $('#btn3').html('資料切割');
+                        },
+                        dataType: 'json',
+                        contentType: "application/json;charset=utf-8",
+                    });
+                } else {
+                    alert("輸入天數需大於0")
+                }
             })
             $("#btn4").on("click", function () {
                 $('#t1').hide()
                 $('#t2').hide()
                 $('#t3').hide()
-                $(this).prop("disabled", true);
-                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>訓練中...')
-                $.ajax({
-                    type: 'POST',
-                    url: urlval + "/train",
-                    data: JSON.stringify(alldata),
-                    headers: {
-                        "ngrok-skip-browser-warning": "69420"
-                    },
-                    success: function (response) {
-                        console.log(response);
-                        //$("#getimg").attr("src", "data:image/png;base64," + response.image_data);
-                        document.getElementById('frame').src = 'data:;base64,' + response['image'];
-                        document.getElementById('frame2').src = 'data:;base64,' + response['image2'];
-                        $("#loss").html(response['scorestrain'])
-                        $('#btn4').prop("disabled", false);
-                        $('#btn4').html('訓練');
-                        $('#t4').show()
-                    },
-                    dataType: 'json',
-                    contentType: "application/json;charset=utf-8",
-                });
+                if ($('#day').val() > 0) {
+                    alldata['day'] = $("#day").val()
+                    $(this).prop("disabled", true);
+                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>訓練中...')
+                    $.ajax({
+                        type: 'POST',
+                        url: urlval + "/train",
+                        data: JSON.stringify(alldata),
+                        headers: {
+                            "ngrok-skip-browser-warning": "69420"
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            //$("#getimg").attr("src", "data:image/png;base64," + response.image_data);
+                            document.getElementById('frame').src = 'data:;base64,' + response['image'];
+                            document.getElementById('frame2').src = 'data:;base64,' + response['image2'];
+                            document.getElementById('frame3').src = 'data:;base64,' + response['image3'];
+                            document.getElementById('frame4').src = 'data:;base64,' + response['image4'];
+                            console.log(response['df']['長度'])
+                            console.log(response['df']['co2'][1])
+                            if (response['df']['長度'] < 15) {
+                                for (var i = 0; i < response['df']['長度']; i++) {
+                                    $("#co2one").append(response['df']['co2'][i] + '<br>');
+                                    $("#co2two").append(response['df']['co2_avg'][i] + '<br>');
+                                    $("#co2three").append(response['df']['co2_std'][i] + '<br>');
+                                    $("#co2four").append(response['df']['co2_thr'][i] + '<br>');
+                                    $("#co2five").append(response['df']['co2_sta'][i] + '<br>');
+                                }
+                            }
+                            else {
+                                var getlen = response['df']['長度'];
+                                var arr = [0, 1, 2, 3, 4, 5, getlen - 5, getlen - 4, getlen - 3, getlen - 2, getlen - 1];
+                                var item = 0;
+                                arr.forEach(e => {
+                                    item += 1;
+                                    if (item == 6) {
+                                        $("#co2one").append('...<br>');
+                                        $("#co2two").append('...<br>');
+                                        $("#co2three").append('...<br>');
+                                        $("#co2four").append('...<br>');
+                                        $("#co2five").append('...<br>');
+                                    } else {
+                                        $("#co2one").append(response['df']['co2'][e] + '<br>');
+                                        $("#co2two").append(response['df']['co2_avg'][e] + '<br>');
+                                        $("#co2three").append(response['df']['co2_std'][e] + '<br>');
+                                        $("#co2four").append(response['df']['co2_thr'][e] + '<br>');
+                                        $("#co2five").append(response['df']['co2_sta'][e] + '<br>');
+                                    }
+                                });
+                            }
+                            $("#loss").html(response['scorestrain'])
+                            $('#btn4').prop("disabled", false);
+                            $('#btn4').html('訓練');
+                            $('#t4').show()
+                        },
+                        dataType: 'json',
+                        contentType: "application/json;charset=utf-8",
+                    });
+                }
             })
         })
     </script>
