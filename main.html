@@ -16,7 +16,7 @@
 
 <body>
     <div class="container">
-        <h2 style="margin-top: 15px;">預測炭排量</h2>
+        <h2 style="margin-top: 15px;">預測碳排量</h2>
         <!-- <select class="form-select" aria-label="Default select example" style="margin-top: 10px;" id="select">
             <option value="" id="option"></option> 
         </select> -->
@@ -117,7 +117,7 @@
                         <th>lowest price</th>
                         <th>average price</th>
                         <th>volume</th>
-                        <th>volume after days</th>
+                        <th>volume after 14 days</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,7 +194,7 @@
             $("#btn2").hide()
             $("#btn3").hide()
             $("#btn4").hide()
-            var urlval = "https://2d54-118-163-254-21.ngrok-free.app"
+            var urlval = "https://af1d-118-163-254-21.ngrok-free.app"
             var alldata = {};
             $.ajax({
                 url: urlval + "/getproduct",
