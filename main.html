@@ -16,7 +16,7 @@
 
 <body>
     <div class="container">
-        <h2 style="margin-top: 15px;">預測碳排量</h2>
+        <h2 style="margin-top: 15px;">Vegetable Carbon Emission Alert</h2>
         <!-- <select class="form-select" aria-label="Default select example" style="margin-top: 10px;" id="select">
             <option value="" id="option"></option> 
         </select> -->
@@ -24,22 +24,25 @@
             style="margin-top: 15px;">
 
         </select>
-        <button class="btn btn-primary" type="button" id="btn" style="margin-top: 10px;">查詢</button>
-        <button class="btn btn-primary" type="button" id="btn2" style="margin-top: 10px;">資料處理</button>
-        <button class="btn btn-primary" type="button" id="btn3" style="margin-top: 10px;">資料切割</button>
-        <button class="btn btn-primary" type="button" id="btn4" style="margin-top: 10px;">訓練</button>
+        <button class="btn btn-primary" type="button" id="btn" style="margin-top: 10px;">Inquire</button>
+        <button class="btn btn-primary" type="button" id="btn2" style="margin-top: 10px;">Data Processing</button>
+        <button class="btn btn-primary" type="button" id="btn3" style="margin-top: 10px;">Data Cutting</button>
+        <button class="btn btn-primary" type="button" id="btn4" style="margin-top: 10px;">Training</button>
+        <a class="btn btn-primary" type="button" id="btn5" style="margin-top: 10px;"
+            href="http://127.0.0.1:5500/main2.html">Home</a>
+        <button class="btn btn-primary" type="button" id="btn6" style="margin-top: 10px;" href="">Exit</button>
         <div id="t1">
             <table class="table table-bordered" style="margin-top: 10px;">
                 <thead>
                     <tr>
-                        <th>日期</th>
-                        <th>產品</th>
-                        <th>上價</th>
-                        <th>中價</th>
-                        <th>下價</th>
-                        <th>平均價(元/公斤)</th>
-                        <th>跟前一交易日比較%</th>
-                        <th>交易量(公斤)</th>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th>High price</th>
+                        <th>Middle price</th>
+                        <th>Low price</th>
+                        <th>Average price</th>
+                        <th>Comparison with Previous Day</th>
+                        <th>Trading Volume(kg)</th>
                         <!-- <th>跟前一交易日比較%</th> -->
                     </tr>
                 </thead>
@@ -60,7 +63,7 @@
         </div>
         <div id="t2">
             <div class="input-group input-group-lg" style="margin-top: 10px;">
-                <span class="input-group-text" id="inputGroup-sizing-lg">輸入預測天數</span>
+                <span class="input-group-text" id="inputGroup-sizing-lg">Enter forecast days</span>
                 <input type="text" class="form-control" aria-label="Sizing example input"
                     aria-describedby="inputGroup-sizing-lg" id="day">
             </div>
@@ -187,6 +190,13 @@
     </div>
     <script>
         $(document).ready(function () {
+            document.getElementById('btn6').onclick = function () {
+                if (window.confirm("Are you sure you want to close this web?")) {
+                    window.opener = null;
+                    window.open('', '_self');
+                    window.close();
+                }
+            };
             $("#t2").hide()
             $("#t1").hide()
             $("#t3").hide()
@@ -194,7 +204,7 @@
             $("#btn2").hide()
             $("#btn3").hide()
             $("#btn4").hide()
-            var urlval = "https://af1d-118-163-254-21.ngrok-free.app"
+            var urlval = "http://127.0.0.1:5000"
             var alldata = {};
             $.ajax({
                 url: urlval + "/getproduct",
@@ -279,7 +289,7 @@
                         $('#btn4').hide();
                         $('#btn3').hide();
                         $('#btn').prop("disabled", false);
-                        $('#btn').html('查詢');
+                        $('#btn').html('Inquire');
                     },
                     error: function (xhr, status, error) {
                         console.error(error);
@@ -379,7 +389,7 @@
                         $('#th1').html("Train Data(共" + response.traindata['長度'] + "筆)")
                         $('#th2').html("Test Data(共" + response.testdata['長度'] + "筆)")
                         $('#btn2').prop("disabled", false);
-                        $('#btn2').html('資料處理');
+                        $('#btn2').html('Data Processing');
                     },
                     dataType: 'json',
                     contentType: "application/json;charset=utf-8",
@@ -487,13 +497,13 @@
                             $('#th21').html("Train Data(共" + response.traindata['長度'] + "筆)")
                             $('#th22').html("Test Data(共" + response.testdata['長度'] + "筆)")
                             $('#btn3').prop("disabled", false);
-                            $('#btn3').html('資料切割');
+                            $('#btn3').html('Data Cutting');
                         },
                         dataType: 'json',
                         contentType: "application/json;charset=utf-8",
                     });
                 } else {
-                    alert("輸入天數需大於0")
+                    alert("The number of input days needs to be greater than 0")
                 }
             })
             $("#btn4").on("click", function () {
@@ -503,7 +513,7 @@
                 if ($('#day').val() > 0) {
                     alldata['day'] = $("#day").val()
                     $(this).prop("disabled", true);
-                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>訓練中...')
+                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Training...')
                     $.ajax({
                         type: 'POST',
                         url: urlval + "/train",
@@ -552,7 +562,7 @@
                             }
                             $("#loss").html(response['scorestrain'])
                             $('#btn4').prop("disabled", false);
-                            $('#btn4').html('訓練');
+                            $('#btn4').html('Training');
                             $('#t4').show()
                         },
                         dataType: 'json',
